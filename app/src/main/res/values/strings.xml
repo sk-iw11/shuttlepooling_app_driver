@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">shuttlepooling_app_driver</string>
+    <string name="app_name">SK Driver</string>
+    <string name="button_connect">Connect server</string>
+    <string name="button_disconnect">Disconnect server</string>
+    <string name="button_navigator">Map navigator</string>
 </resources>
