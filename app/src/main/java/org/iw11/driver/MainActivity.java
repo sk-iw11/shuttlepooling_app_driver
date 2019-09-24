@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         button_connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String uri = "http://maps.google.com/maps/dir/?api=1&origin=55.698128,37.359803&waypoints=55.690135,37.348110&destination=55.684283,37.341396&travelmode=driving";
+                String uri = "http://maps.google.com/maps/dir/?api=1&saddr=55.698128,37.359803&daddr=55.690135,37.348110+to:55.684283,37.341396&travelmode=driving";
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
                 intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
                 startActivity(intent);
@@ -85,22 +85,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     1);
-        }
-
-/*        startLocationUpdates();
-
-        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-        if(mLocation == null){
-            startLocationUpdates();
-        }
-        if (mLocation != null) {
-
-            // mLatitudeTextView.setText(String.valueOf(mLocation.getLatitude()));
-            //mLongitudeTextView.setText(String.valueOf(mLocation.getLongitude()));
         } else {
-            Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
-        }*/
+            Log.i(TAG, "Permissions granted!");
+
+            startLocationUpdates();
+
+            mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+            if(mLocation == null){
+                startLocationUpdates();
+            }
+            if (mLocation != null) {
+
+                // mLatitudeTextView.setText(String.valueOf(mLocation.getLatitude()));
+                //mLongitudeTextView.setText(String.valueOf(mLocation.getLongitude()));
+            } else {
+                Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
