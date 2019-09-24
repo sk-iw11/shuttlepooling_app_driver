@@ -3,29 +3,206 @@ package org.iw11.driver;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
+import androidx.core.content.ContextCompat;
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+    private Location mLocation;
+    private com.google.android.gms.location.LocationListener listener;
+    private Button button_connect;
+    //Button btn_start;
+    private static final int REQUEST_PERMISSIONS = 100;
+    boolean boolean_permission;
+    //TextView tv_latitude, tv_longitude, tv_address,tv_area,tv_locality;
+    SharedPreferences mPref;
+    SharedPreferences.Editor medit;
+    Double latitude,longitude;
+    Geocoder geocoder;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        geocoder = new Geocoder(this, Locale.getDefault());
+        mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        medit = mPref.edit();
+
+        button_connect=findViewById(R.id.button_connect);
+        button_connect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uri = "http://maps.google.com/maps/dir/?api=1&saddr=55.698128,37.359803&daddr=55.690135,37.348110+to:55.684283,37.341396&travelmode=driving";
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                startActivity(intent);
+            }
+        });
+
+/*
+        btn_start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (boolean_permission) {
+
+                    if (mPref.getString("service", "").matches("")) {
+                        medit.putString("service", "service").commit();
+
+                        Intent intent = new Intent(getApplicationContext(), BackgroundGPS.class);
+                        startService(intent);
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Service is already running", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enable the gps", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });*/
+
+        Button button_disconnect=findViewById(R.id.button_disconnect);
+        button_disconnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (boolean_permission) {
+
+                    Intent intent = new Intent(getApplicationContext(), BackgroundGPS.class);
+                    startService(intent);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enable the gps", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        fn_permission();
+    }
+
+    private void fn_permission() {
+        if ((ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+
+            if ((ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION))) {
+
+
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION
+
+                        },
+                        REQUEST_PERMISSIONS);
+
+            }
+        } else {
+            boolean_permission = true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    boolean_permission = true;
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please allow the permission", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        }
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            latitude = Double.valueOf(intent.getStringExtra("latutide"));
+            longitude = Double.valueOf(intent.getStringExtra("longitude"));
+            String msg = "Updated Location: " +
+                    (latitude) + "," +
+                    (longitude);
+            //mLatitudeTextView.setText(String.valueOf(location.getLatitude()));
+            //mLongitudeTextView.setText(String.valueOf(location.getLongitude() ));
+            //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            // You can now create a LatLng Object for use with maps
+            Log.i(TAG, msg);
+            LatLng latLng = new LatLng(latitude, longitude);
+            List<Address> addresses = null;
+
+            try {
+                addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                //String cityName = addresses.get(0).getAddressLine(0);
+                //String stateName = addresses.get(0).getAddressLine(1);
+                //String countryName = addresses.get(0).getAddressLine(2);
+
+                //tv_area.setText(addresses.get(0).getAdminArea());
+                //tv_locality.setText(stateName);
+                //tv_address.setText(countryName);
+
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+
+            //tv_latitude.setText(latitude+"");
+            //tv_longitude.setText(longitude+"");
+            //tv_address.getText();
+
+
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(broadcastReceiver, new IntentFilter(BackgroundGPS.str_receiver));
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
+
+
+}
+
+/*
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
@@ -37,8 +214,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private LocationRequest mLocationRequest;
     private com.google.android.gms.location.LocationListener listener;
-    private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
-    private long FASTEST_INTERVAL = 2000; /* 2 sec */
+    private long UPDATE_INTERVAL = 2 * 1000;  // 10 secs
+private long FASTEST_INTERVAL = 2000; // 2 sec
 
 
     private LocationManager locationManager;
@@ -109,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-            grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "Permissions granted!");
 
             startLocationUpdates();
@@ -229,42 +406,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 }
-    /*
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Main body
-
-        // Manager instance for GPS
-
-        //checkLocation(); //check whether location service is enable or not in your  phone
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-
-        mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-
-
-
-        button_connect=findViewById(R.id.button_connect);
-        button_connect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String uri = "http://maps.google.com/maps/dir/?api=1&origin=55.698128,37.359803&waypoints=55.690135,37.348110&destination=55.684283,37.341396&travelmode=driving";
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
-                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-                startActivity(intent);
-            }
-            });
-
-    }
-
-
-}
 */
