@@ -8,16 +8,59 @@
 
     <LinearLayout
         android:id="@+id/Linear_layout1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_width="409dp"
+        android:layout_height="529dp"
+        android:layout_marginStart="2dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:text="@string/textView1"
+            android:textAlignment="viewStart"
+            android:textColor="#0C0101"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/textView_nextstop"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:text="@string/textView_nextstop"
+            android:textAlignment="center"
+            android:textColor="#0C0101"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:text="@string/textView2"
+            android:textAlignment="viewStart"
+            android:textColor="#0C0101"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/textView_passengers"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:text="@string/textView_passengers"
+            android:textAlignment="center"
+            android:textColor="#0C0101"
+            android:textSize="36sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
     <TableRow
         android:id="@+id/Table_row1"
-        android:layout_width="417dp"
-        android:layout_height="113dp"
+        android:layout_width="411dp"
+        android:layout_height="91dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -28,17 +71,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:backgroundTint="#8FC43E"
             android:text="@string/button_connect"
             android:textSize="24sp" />
 
+
         <Button
-            android:id="@+id/button_disconnect"
+            android:id="@+id/button_navigator"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/button_disconnect"
+            android:backgroundTint="#8FC43E"
+            android:text="@string/button_navigator"
             android:textSize="24sp" />
+
+
     </TableRow>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

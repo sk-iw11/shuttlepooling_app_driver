@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">SK Driver</string>
+    <string name="button_navigator">Navigator</string>
     <string name="button_connect">Connect server</string>
     <string name="button_disconnect">Disconnect server</string>
-    <string name="button_navigator">Map navigator</string>
+    <string name="textView1">Next Stop: </string>
+    <string name="textView2">Passengers awaits: </string>
+    <string name="textView_passengers">0</string>
+    <string name="textView_nextstop">Skoltech</string>
 </resources>
