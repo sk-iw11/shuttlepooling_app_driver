@@ -37,7 +37,7 @@ public class BackgroundGPS extends Service implements LocationListener{
     public static String str_receiver = "servicetutorial.service.receiver";
     Intent intent;
 
-
+    private String token;
 
 
     public BackgroundGPS() {
@@ -46,6 +46,7 @@ public class BackgroundGPS extends Service implements LocationListener{
 
     @Override
     public IBinder onBind(Intent intent) {
+        token = intent.getStringExtra("token");
         return null;
     }
 
@@ -144,7 +145,7 @@ public class BackgroundGPS extends Service implements LocationListener{
         Log.i("longitude",location.getLongitude()+"");
 
         LocationUpdate locationUpdate = new LocationUpdate("A", location.getLatitude(), location.getLongitude());
-        Call<Void> postLocation = RestServiceFactory.getApiService().postLocation(locationUpdate);
+        Call<Void> postLocation = RestServiceFactory.getApiService().postLocation(token, locationUpdate);
         postLocation.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

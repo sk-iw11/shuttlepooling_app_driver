@@ -1,4 +1,4 @@
-package org.iw11.driver;
+package org.iw11.driver.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -24,6 +24,10 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 
 
+import org.iw11.driver.BackgroundGPS;
+import org.iw11.driver.R;
+import org.iw11.driver.network.TokenManager;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -42,10 +46,16 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor medit;
     Double latitude,longitude;
     Geocoder geocoder;
+
+    private TokenManager tokenManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tokenManager = new TokenManager(getApplicationContext());
+
         geocoder = new Geocoder(this, Locale.getDefault());
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         medit = mPref.edit();
@@ -57,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 String uri = "http://maps.google.com/maps/dir/?api=1&saddr=55.698128,37.359803&daddr=55.690135,37.348110+to:55.684283,37.341396&travelmode=driving";
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
                 intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                intent.putExtra("token", tokenManager.getToken());
                 startActivity(intent);
             }
         });
