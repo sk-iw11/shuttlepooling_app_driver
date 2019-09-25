@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class RestServiceFactory {
 
-    private static final String API_BASE_URL = "http://10.16.102.69:8080/api/";
+    private static final String API_BASE_URL = "http://192.168.0.102:8080/api/";
 
     private static Retrofit RETROFIT;
 

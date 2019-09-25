@@ -8,4 +8,55 @@
     tools:context=".activity.TrackingActivity"
     tools:showIn="@layout/activity_tracking">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tracking_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="200dp"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:text="Waiting for the route..." />
+
+        <TextView
+            android:id="@+id/tracking_route"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:textSize="18sp"
+            android:text="Technopark\nSkoltech" />
+
+        <Button
+            android:id="@+id/tracking_open_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/ripple_blue"
+            android:textColor="#ffffff"
+            android:text="Open in Google Maps" />
+
+        <Button
+            android:id="@+id/tracking_complete_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/ripple_red"
+            android:textColor="#ffffff"
+            android:text="Complete ride" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

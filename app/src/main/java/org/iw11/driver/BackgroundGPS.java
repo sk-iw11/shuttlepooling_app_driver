@@ -59,12 +59,18 @@ public class BackgroundGPS extends Service implements LocationListener{
 //        fn_getlocation();
     }
 
+    @Override
+    public void onDestroy() {
+        mTimer.cancel();
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
         token = intent.getStringExtra("token");
         return START_STICKY;
     }
+
 
     @Override
     public void onLocationChanged(Location location) {
