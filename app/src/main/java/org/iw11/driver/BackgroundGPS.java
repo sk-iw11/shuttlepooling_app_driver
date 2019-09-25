@@ -46,7 +46,6 @@ public class BackgroundGPS extends Service implements LocationListener{
 
     @Override
     public IBinder onBind(Intent intent) {
-        token = intent.getStringExtra("token");
         return null;
     }
 
@@ -58,6 +57,13 @@ public class BackgroundGPS extends Service implements LocationListener{
         mTimer.schedule(new TimerTaskToGetLocation(),5,notify_interval);
         intent = new Intent(str_receiver);
 //        fn_getlocation();
+    }
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flag, int startId) {
+        token = intent.getStringExtra("token");
+        return START_STICKY;
     }
 
     @Override
@@ -145,12 +151,13 @@ public class BackgroundGPS extends Service implements LocationListener{
         Log.i("longitude",location.getLongitude()+"");
 
         LocationUpdate locationUpdate = new LocationUpdate("A", location.getLatitude(), location.getLongitude());
-        Call<Void> postLocation = RestServiceFactory.getApiService().postLocation(token, locationUpdate);
+        Call<Void> postLocation = RestServiceFactory.getApiService().postLocation(locationUpdate, token);
         postLocation.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.code() != 200)
+                if (response.code() != 200) {
                     Log.e(TAG, "Response status: " + response.code());
+                }
             }
 
             @Override

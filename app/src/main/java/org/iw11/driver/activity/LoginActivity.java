@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
 
         tokenManager = new TokenManager(getApplicationContext());
         if (tokenManager.getToken() != null) {
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), TrackingActivity.class);
             startActivity(intent);
         }
 
@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         tokenManager.setToken(response.body().getToken());
 
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), TrackingActivity.class);
                         startActivity(intent);
                     }
 

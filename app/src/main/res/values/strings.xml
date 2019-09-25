@@ -7,4 +7,5 @@
     <string name="textView2">Passengers awaits: </string>
     <string name="textView_passengers">0</string>
     <string name="textView_nextstop">Skoltech</string>
+    <string name="title_activity_tracking">TrackingActivity</string>
 </resources>

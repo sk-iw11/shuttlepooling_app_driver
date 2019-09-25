@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 public interface IBusPoolingApi {
 
     @POST("bus/location")
-    Call<Void> postLocation(@Header("Access-token") String token, @Body LocationUpdate locationUpdate);
+    Call<Void> postLocation(@Body LocationUpdate locationUpdate, @Header("Access-token") String token);
 
     @POST("bus/login")
     Call<TokenModel> postLogin(@Body BusCredentials busCredentials);
