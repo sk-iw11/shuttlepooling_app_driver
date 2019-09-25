@@ -12,10 +12,19 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.iw11.driver.network.RestServiceFactory;
+import org.iw11.driver.network.model.LocationUpdate;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BackgroundGPS extends Service implements LocationListener{
+
+    private static final String TAG = BackgroundGPS.class.getName();
 
     boolean isGPSEnable = false;
     boolean isNetworkEnable = false;
@@ -86,10 +95,6 @@ public class BackgroundGPS extends Service implements LocationListener{
                 if (locationManager!=null){
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (location!=null){
-
-                        Log.e("latitude",location.getLatitude()+"");
-                        Log.e("longitude",location.getLongitude()+"");
-
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
                         fn_update(location);
@@ -135,9 +140,24 @@ public class BackgroundGPS extends Service implements LocationListener{
 
     private void fn_update(Location location){
 
-        intent.putExtra("latutide",location.getLatitude()+"");
-        intent.putExtra("longitude",location.getLongitude()+"");
-        sendBroadcast(intent);
+        Log.i("latitude",location.getLatitude()+"");
+        Log.i("longitude",location.getLongitude()+"");
+
+        LocationUpdate locationUpdate = new LocationUpdate("A", location.getLatitude(), location.getLongitude());
+        Call<Void> postLocation = RestServiceFactory.getApiService().postLocation(locationUpdate);
+        postLocation.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.code() != 200)
+                    Log.e(TAG, "Response status: " + response.code());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Error while sending location", t);
+            }
+        });
+
     }
 
 
