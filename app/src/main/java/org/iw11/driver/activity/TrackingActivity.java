@@ -71,37 +71,17 @@ public class TrackingActivity extends AppCompatActivity {
         openMapsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currentRoute == null) {
-                    return;
-                }
-                List<BusStation> stations = currentRoute.getStations();
-
-                StringBuilder builder = new StringBuilder();
-                builder.append("http://maps.google.com/maps/dir/?api=1&saddr=");
-                builder.append(stations.get(0).getLocation().getLatitude());
-                builder.append(",");
-                builder.append(stations.get(0).getLocation().getLongitude());
-                builder.append("&daddr=");
-                builder.append(stations.get(1).getLocation().getLatitude());
-                builder.append(",");
-                builder.append(stations.get(1).getLocation().getLongitude());
-                for (int i = 2; i < stations.size(); i++) {
-                    builder.append("+to:");
-                    builder.append(stations.get(i).getLocation().getLatitude());
-                    builder.append(",");
-                    builder.append(stations.get(i).getLocation().getLongitude());
-                }
-                builder.append("&travelmode=driving");
-
-
-                //String uri = "http://maps.google.com/maps/dir/?api=1&saddr=55.697469,37.359772&daddr=55.690140,37.348696+to:55.684135,37.340977&travelmode=driving";
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(builder.toString()));
-                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-                startActivity(intent);
+                openMap();
             }
         });
 
         completeRideButton = findViewById(R.id.tracking_complete_button);
+        completeRideButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postRouteComplete();
+            }
+        });
 
         activityCaption = findViewById(R.id.tracking_caption);
         routeView = findViewById(R.id.tracking_route);
@@ -139,9 +119,9 @@ public class TrackingActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executor.shutdown();
+    public void onStop() {
+        super.onStop();
+        executor.shutdownNow();
     }
 
     @Override
@@ -160,6 +140,8 @@ public class TrackingActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        executor.shutdownNow();
+
         tokenManager.setToken(null);
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
@@ -249,5 +231,59 @@ public class TrackingActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Error connecting to server", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void postRouteComplete() {
+        completeRideButton.setEnabled(false);
+        Call<Void> call = RestServiceFactory.getApiService().postRouteComplete(tokenManager.getToken());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.code() != 200) {
+                    Log.e(TAG,"Error connecting to server, status code: " + response.code());
+                    Toast.makeText(getApplicationContext(), "Server error", Toast.LENGTH_LONG).show();
+                    completeRideButton.setEnabled(true);
+                    return;
+                }
+                setCurrentRoute(null);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Error connecting to server", t);
+                Toast.makeText(getApplicationContext(), "Error connecting to server", Toast.LENGTH_LONG).show();
+                completeRideButton.setEnabled(true);
+            }
+        });
+    }
+
+    public void openMap() {
+        if (currentRoute == null) {
+            return;
+        }
+        List<BusStation> stations = currentRoute.getStations();
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("http://maps.google.com/maps/dir/?api=1&saddr=");
+        builder.append(stations.get(0).getLocation().getLatitude());
+        builder.append(",");
+        builder.append(stations.get(0).getLocation().getLongitude());
+        builder.append("&daddr=");
+        builder.append(stations.get(1).getLocation().getLatitude());
+        builder.append(",");
+        builder.append(stations.get(1).getLocation().getLongitude());
+        for (int i = 2; i < stations.size(); i++) {
+            builder.append("+to:");
+            builder.append(stations.get(i).getLocation().getLatitude());
+            builder.append(",");
+            builder.append(stations.get(i).getLocation().getLongitude());
+        }
+        builder.append("&travelmode=driving");
+
+
+        //String uri = "http://maps.google.com/maps/dir/?api=1&saddr=55.697469,37.359772&daddr=55.690140,37.348696+to:55.684135,37.340977&travelmode=driving";
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(builder.toString()));
+        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+        startActivity(intent);
     }
 }

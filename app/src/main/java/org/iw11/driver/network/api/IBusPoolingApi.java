@@ -21,4 +21,7 @@ public interface IBusPoolingApi {
 
     @GET("bus/route")
     Call<BusRoute> getRoute(@Header("Access-token") String token);
+
+    @POST("bus/route/complete")
+    Call<Void> postRouteComplete(@Header("Access-token") String token);
 }
